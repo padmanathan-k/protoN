@@ -70,8 +70,14 @@ jobs:
     name: Deploy to Render
     runs-on: ubuntu-latest
     needs: package
-    if: ${{ secrets.RENDER_DEPLOY_HOOK_URL != '' }}
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
 
     steps:
+      - name: Skip deploy when hook is not configured
+        if: ${{ env.RENDER_DEPLOY_HOOK_URL == '' }}
+        run: echo "RENDER_DEPLOY_HOOK_URL is not configured. Skipping deploy."
+
       - name: Trigger Render deploy hook
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' }}
+        run: curl -X POST "$RENDER_DEPLOY_HOOK_URL"
