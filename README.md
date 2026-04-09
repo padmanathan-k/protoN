@@ -286,6 +286,58 @@ Visit:
 
 [http://localhost:5173](http://localhost:5173)
 
+## Run with Docker
+
+The project now includes:
+
+- [docker-compose.yml](C:/Users/Padmanathan%20K/Desktop/protoN%20for%20Social/docker-compose.yml)
+- [backend/Dockerfile](C:/Users/Padmanathan%20K/Desktop/protoN%20for%20Social/backend/Dockerfile)
+- [frontend/Dockerfile](C:/Users/Padmanathan%20K/Desktop/protoN%20for%20Social/frontend/Dockerfile)
+
+### Start the full stack
+
+```bash
+docker compose up --build
+```
+
+### Open the app
+
+- Frontend: [http://localhost:8080](http://localhost:8080)
+- Backend API: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+- MongoDB: `mongodb://localhost:27017`
+
+### Stop containers
+
+```bash
+docker compose down
+```
+
+### Stop containers and remove MongoDB volume
+
+```bash
+docker compose down -v
+```
+
+## Docker Hub and GitHub Actions
+
+The `CD` workflow can also build and push Docker images automatically on every push to `main`.
+
+Add these GitHub Actions secrets in your repository:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+Docker images will be published as:
+
+- `pravinvk/proton-backend`
+- `pravinvk/proton-frontend`
+
+Recommended Docker Hub login locally:
+
+```bash
+echo YOUR_DOCKERHUB_TOKEN | docker login -u pravinvk --password-stdin
+```
+
 ## Current Prototype Notes
 
 - This is an MVP-style build, not a production deployment
