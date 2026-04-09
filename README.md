@@ -338,6 +338,40 @@ Recommended Docker Hub login locally:
 echo YOUR_DOCKERHUB_TOKEN | docker login -u pravinvk --password-stdin
 ```
 
+## Deploy on Render
+
+The repo now includes a Render Blueprint:
+
+- [render.yaml](C:/Users/Padmanathan%20K/Desktop/protoN%20for%20Social/render.yaml)
+
+It provisions:
+
+- `proton-mongo` as a private MongoDB container with a persistent disk
+- `proton-backend` as a public web service
+- `proton-frontend` as a public web service
+
+### Create the deployment
+
+1. Open Render Dashboard
+2. Click `New +`
+3. Choose `Blueprint`
+4. Connect this GitHub repo:
+   - [https://github.com/padmanathan-k/protoN](https://github.com/padmanathan-k/protoN)
+5. Render will detect `render.yaml`
+6. Review the three services and deploy
+
+### What Render config does for you
+
+- Generates a production `JWT_SECRET`
+- Connects backend to Mongo over the private network
+- Connects frontend to backend over the private network through nginx
+- Exposes the frontend and backend publicly
+
+### After deploy
+
+- Open the `proton-frontend` Render URL
+- Test backend health from the `proton-backend` Render URL at `/api/health`
+
 ## Current Prototype Notes
 
 - This is an MVP-style build, not a production deployment

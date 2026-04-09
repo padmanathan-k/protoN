@@ -1,0 +1,45 @@
+services:
+  - name: proton-mongo
+    type: pserv
+    runtime: image
+    plan: starter
+    image:
+      url: docker.io/library/mongo:7
+    dockerCommand: mongod --bind_ip 0.0.0.0
+    disk:
+      name: mongo-data
+      mountPath: /data/db
+      sizeGB: 1
+
+  - name: proton-backend
+    type: web
+    runtime: docker
+    plan: starter
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGO_HOSTPORT
+        fromService:
+          type: pserv
+          name: proton-mongo
+          property: hostport
+      - key: MONGO_DB_NAME
+        value: proton-social
+
+  - name: proton-frontend
+    type: web
+    runtime: docker
+    plan: starter
+    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
+    envVars:
+      - key: API_UPSTREAM
+        fromService:
+          type: web
+          name: proton-backend
+          property: hostport
