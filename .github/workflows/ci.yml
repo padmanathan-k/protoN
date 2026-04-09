@@ -27,6 +27,10 @@ jobs:
         working-directory: backend
         run: npm ci
 
+      - name: Run backend Jest tests
+        working-directory: backend
+        run: npm test
+
       - name: Smoke check Express app
         working-directory: backend
         run: node -e "require('./src/app'); console.log('backend app loaded')"
@@ -50,6 +54,16 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Setup Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Run Selenium smoke test
+        working-directory: frontend
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: npm run test:selenium
