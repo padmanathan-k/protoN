@@ -1,7 +1,7 @@
 const Seed = require("../models/Seed");
 const Reed = require("../models/Reed");
 const Theme = require("../models/Theme");
-const { buildReedTree } = require("../utils/treeBuilder");
+const { buildReedTree } = require("../Utils/treeBuilder");
 
 const serializeVoteCount = (doc) => ({
   ...doc,
