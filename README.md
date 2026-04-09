@@ -372,6 +372,62 @@ It provisions:
 - Open the `proton-frontend` Render URL
 - Test backend health from the `proton-backend` Render URL at `/api/health`
 
+## Free Deployment Path
+
+If Render asks for billing details for the full blueprint, use this no-card split instead:
+
+- `MongoDB Atlas M0` for the database
+- `Render Free Web Service` for the backend
+- `Vercel Hobby` for the frontend
+
+### 1. Create a free MongoDB Atlas cluster
+
+- Create an Atlas account
+- Create an `M0` free cluster
+- Create a database user
+- Allow access from Render
+- Copy the connection string into `MONGO_URI`
+
+### 2. Deploy the backend on Render Free
+
+Create a new `Web Service` on Render from this repo with:
+
+- Root directory: `backend`
+- Runtime: `Docker`
+- Dockerfile: `backend/Dockerfile`
+
+Set these environment variables:
+
+- `PORT=10000`
+- `JWT_SECRET=<your-secret>`
+- `MONGO_URI=<your-atlas-connection-string>`
+
+Health check path:
+
+- `/api/health`
+
+### 3. Deploy the frontend on Vercel Hobby
+
+The frontend already includes:
+
+- [frontend/vercel.json](C:/Users/Padmanathan%20K/Desktop/protoN%20for%20Social/frontend/vercel.json)
+
+Create a Vercel project from this repo with:
+
+- Root directory: `frontend`
+- Framework preset: `Vite`
+
+Set this environment variable in Vercel:
+
+- `VITE_API_URL=https://YOUR-BACKEND-ON-RENDER/api`
+
+Then deploy.
+
+### 4. Open the live app
+
+- Frontend: your Vercel URL
+- Backend health: `https://YOUR-BACKEND-ON-RENDER/api/health`
+
 ## Current Prototype Notes
 
 - This is an MVP-style build, not a production deployment
