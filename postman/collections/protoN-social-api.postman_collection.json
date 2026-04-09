@@ -1,0 +1,469 @@
+{
+  "info": {
+    "_postman_id": "2f135dfd-c65e-4cbc-a07b-58b197919c78",
+    "name": "protoN for Social API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "End-to-end API checks for protoN for Social."
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.environment.get('testUsername')) {",
+          "  const suffix = Date.now().toString();",
+          "  pm.environment.set('testUsername', `proton_${suffix}`);",
+          "  pm.environment.set('testEmail', `proton_${suffix}@example.com`);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('register succeeds', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson.token).to.be.a('string');",
+                  "pm.environment.set('authToken', responseJson.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"{{testUsername}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('login succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson.user.username).to.eql(pm.environment.get('testUsername'));",
+                  "pm.environment.set('authToken', responseJson.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('profile fetch succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson.username).to.eql(pm.environment.get('testUsername'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Themes",
+      "item": [
+        {
+          "name": "Create Theme",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Technology {{testUsername}}\",\n  \"description\": \"Automated local API test theme.\",\n  \"themeType\": \"custom\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/themes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "themes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('theme creation succeeds', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.environment.set('themeId', responseJson._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Themes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/themes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "themes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('themes list succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson.length).to.be.greaterThan(0);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Seeds",
+      "item": [
+        {
+          "name": "Create Seed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"themeId\": \"{{themeId}}\",\n  \"title\": \"Automated seed {{testUsername}}\",\n  \"content\": \"This seed was created from the Postman collection.\",\n  \"mediaType\": \"none\",\n  \"mediaUrl\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/seeds",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seeds"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('seed creation succeeds', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.environment.set('seedId', responseJson._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Seeds By Theme",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/seeds/theme/{{themeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seeds",
+                "theme",
+                "{{themeId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('seed list succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson[0]._id).to.eql(pm.environment.get('seedId'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upvote Seed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/seeds/{{seedId}}/upvote",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seeds",
+                "{{seedId}}",
+                "upvote"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('seed upvote succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson.upvoteCount).to.eql(1);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reeds",
+      "item": [
+        {
+          "name": "Create Reed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seedId\": \"{{seedId}}\",\n  \"content\": \"This reed was created from the Postman collection.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/reeds",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reeds"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('reed creation succeeds', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.environment.set('reedId', responseJson._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upvote Reed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reeds/{{reedId}}/upvote",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reeds",
+                "{{reedId}}",
+                "upvote"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('reed upvote succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson.upvoteCount).to.eql(1);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Seed Tree",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/seeds/{{seedId}}/tree",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "seeds",
+                "{{seedId}}",
+                "tree"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('seed tree fetch succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var responseJson = pm.response.json();",
+                  "pm.expect(responseJson._id).to.eql(pm.environment.get('seedId'));",
+                  "pm.expect(responseJson.reeds.length).to.be.greaterThan(0);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
