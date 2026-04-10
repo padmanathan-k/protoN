@@ -2,6 +2,12 @@
 workspace:
   id: 901adf12-dba5-4d26-8971-ef5843c72f68
 
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ..\postman\collections\protoN for Social API: 2f135dfd-c65e-4cbc-a07b-58b197919c78
+
 # All resources in the `postman/` folder are automatically registered in Local View.
 # Point to additional files outside the `postman/` folder to register them individually. Example:
 #localResources:

@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/reeds"
+method: POST
+headers:
+  Authorization: Bearer {{authToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "seedId": "{{seedId}}",
+      "content": "This reed was created from the Postman collection."
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('reed creation succeeds', function () {
+        pm.response.to.have.status(201);
+      });
+      var responseJson = pm.response.json();
+      pm.environment.set('reedId', responseJson._id);
+    language: text/javascript
+order: 1000

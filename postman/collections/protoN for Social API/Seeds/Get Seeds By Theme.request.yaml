@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/seeds/theme/{{themeId}}"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('seed list succeeds', function () {
+        pm.response.to.have.status(200);
+      });
+      var responseJson = pm.response.json();
+      pm.expect(responseJson[0]._id).to.eql(pm.environment.get('seedId'));
+    language: text/javascript
+order: 2000

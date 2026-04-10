@@ -1,0 +1,11 @@
+$kind: collection
+description: End-to-end API checks for protoN for Social.
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      if (!pm.environment.get('testUsername')) {
+        const suffix = Date.now().toString();
+        pm.environment.set('testUsername', `proton_${suffix}`);
+        pm.environment.set('testEmail', `proton_${suffix}@example.com`);
+      }
+    language: text/javascript

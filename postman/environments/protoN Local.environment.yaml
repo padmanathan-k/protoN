@@ -1,0 +1,26 @@
+name: protoN Local
+values:
+  - key: baseUrl
+    value: 'http://127.0.0.1:5000/api'
+    enabled: true
+  - key: testPassword
+    value: ProtoN@12345
+    enabled: true
+  - key: testUsername
+    value: ''
+    enabled: true
+  - key: testEmail
+    value: ''
+    enabled: true
+  - key: authToken
+    value: ''
+    enabled: true
+  - key: themeId
+    value: ''
+    enabled: true
+  - key: seedId
+    value: ''
+    enabled: true
+  - key: reedId
+    value: ''
+    enabled: true

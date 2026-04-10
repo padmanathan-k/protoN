@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/themes"
+method: POST
+headers:
+  Authorization: Bearer {{authToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Technology {{testUsername}}",
+      "description": "Automated local API test theme.",
+      "themeType": "custom"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('theme creation succeeds', function () {
+        pm.response.to.have.status(201);
+      });
+      var responseJson = pm.response.json();
+      pm.environment.set('themeId', responseJson._id);
+    language: text/javascript
+order: 1000

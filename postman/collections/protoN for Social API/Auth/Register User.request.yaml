@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "username": "{{testUsername}}",
+      "email": "{{testEmail}}",
+      "password": "{{testPassword}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('register succeeds', function () {
+        pm.response.to.have.status(201);
+      });
+      var responseJson = pm.response.json();
+      pm.expect(responseJson.token).to.be.a('string');
+      pm.environment.set('authToken', responseJson.token);
+    language: text/javascript
+order: 1000

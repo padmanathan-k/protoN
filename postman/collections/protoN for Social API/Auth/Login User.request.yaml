@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "identifier": "{{testUsername}}",
+      "password": "{{testPassword}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('login succeeds', function () {
+        pm.response.to.have.status(200);
+      });
+      var responseJson = pm.response.json();
+      pm.expect(responseJson.user.username).to.eql(pm.environment.get('testUsername'));
+      pm.environment.set('authToken', responseJson.token);
+    language: text/javascript
+order: 2000

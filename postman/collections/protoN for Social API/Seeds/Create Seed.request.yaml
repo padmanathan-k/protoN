@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{baseUrl}}/seeds"
+method: POST
+headers:
+  Authorization: Bearer {{authToken}}
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "themeId": "{{themeId}}",
+      "title": "Automated seed {{testUsername}}",
+      "content": "This seed was created from the Postman collection.",
+      "mediaType": "none",
+      "mediaUrl": ""
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('seed creation succeeds', function () {
+        pm.response.to.have.status(201);
+      });
+      var responseJson = pm.response.json();
+      pm.environment.set('seedId', responseJson._id);
+    language: text/javascript
+order: 1000

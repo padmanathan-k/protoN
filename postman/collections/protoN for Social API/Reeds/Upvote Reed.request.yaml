@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/reeds/{{reedId}}/upvote"
+method: POST
+headers:
+  Authorization: Bearer {{authToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('reed upvote succeeds', function () {
+        pm.response.to.have.status(200);
+      });
+      var responseJson = pm.response.json();
+      pm.expect(responseJson.upvoteCount).to.eql(1);
+    language: text/javascript
+order: 2000

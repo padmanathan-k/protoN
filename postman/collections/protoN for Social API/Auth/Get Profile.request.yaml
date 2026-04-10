@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/me"
+method: GET
+headers:
+  Authorization: Bearer {{authToken}}
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('profile fetch succeeds', function () {
+        pm.response.to.have.status(200);
+      });
+      var responseJson = pm.response.json();
+      pm.expect(responseJson.username).to.eql(pm.environment.get('testUsername'));
+    language: text/javascript
+order: 3000
